@@ -6,8 +6,7 @@ import com.patikadev.Model.Operator;
 import com.patikadev.Model.User;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +28,10 @@ public class OperatorGUI extends JFrame {
     private JButton btn_user_add;
     private JTextField fld_user_id;
     private JButton btn_user_delete;
+    private JTextField fld_sh_user_name;
+    private JTextField fld_sh_user_username;
+    private JComboBox cmb_sh_user_type;
+    private JButton btn_user_sh;
     private DefaultTableModel mdl_user_list;
     private Object[] row_user_list;
 
@@ -80,6 +83,23 @@ public class OperatorGUI extends JFrame {
             }
         });
 
+        //Tıklanan verinin içeriğini değiştirmek
+        tbl_user_list.getModel().addTableModelListener(e -> {
+            if(e.getType()==TableModelEvent.UPDATE){
+                //tıklanan yerdeki verileri almak
+                int user_id=Integer.parseInt(tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(),0).toString());
+                String user_name=tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(),1).toString();
+                String user_username=tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(),2).toString();
+                String user_pass=tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(),3).toString();
+                String user_type=tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(),4).toString();
+
+                if (User.update(user_id,user_name,user_username,user_pass,user_type)){
+                    Helper.showMessage("success");
+
+                }
+                loadUserModel();
+            }
+        });
 
         btn_user_add.addActionListener(e -> {
             if(Helper.isFieldEmpty(fld_user_name) || Helper.isFieldEmpty(fld_user_username) || Helper.isFieldEmpty(fld_user_password)){
@@ -109,6 +129,12 @@ public class OperatorGUI extends JFrame {
                 }else{
                     Helper.showMessage("error");
                 }
+            }
+        });
+        btn_user_sh.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
     }

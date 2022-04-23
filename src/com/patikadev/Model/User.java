@@ -93,6 +93,7 @@ public class User {
     }
     public static boolean add(String name,String username, String pass, String type){
         String query="INSERT INTO USER (name, username, pass, type) VALUES (?,?,?,?)";
+        //aynı isimli username varsa hata ver
         User findUser=User.getFetch(username);
         if(findUser!=null){
             Helper.showMessage("duplicate");
@@ -143,6 +144,27 @@ public class User {
         try {
             PreparedStatement pr=DBConnector.getInstance().prepareStatement(query);
             pr.setInt(1,id);
+            return pr.executeUpdate() != -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+    public static boolean update(int id, String name, String username, String pass, String type){
+        String query="UPDATE user SET name=?,username=?,pass=?,type=? WHERE id=?";
+        //aynı isimli username varsa hata verir
+        User findUser=User.getFetch(username);
+        if(findUser!=null && findUser.getId() != id){
+            Helper.showMessage("duplicate");
+            return false;
+        }
+        try {
+            PreparedStatement pr=DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,name);
+            pr.setString(2,username);
+            pr.setString(3,pass);
+            pr.setString(4,type);
+            pr.setInt(5,id);
             return pr.executeUpdate() != -1;
         } catch (SQLException e) {
             e.printStackTrace();
