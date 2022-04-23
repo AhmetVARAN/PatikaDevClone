@@ -1,6 +1,7 @@
 package com.patikadev.Model;
 
 import com.patikadev.Helper.DBConnector;
+import com.patikadev.Helper.Helper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -84,6 +85,7 @@ public class User {
 
                 userList.add(obj);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -91,17 +93,49 @@ public class User {
     }
     public static boolean add(String name,String username, String pass, String type){
         String query="INSERT INTO USER (name, username, pass, type) VALUES (?,?,?,?)";
-
+        User findUser=User.getFetch(username);
+        if(findUser!=null){
+            Helper.showMessage("duplicate");
+            return false;
+        }
         try {
             PreparedStatement pr=DBConnector.getInstance().prepareStatement(query);
             pr.setString(1,name);
             pr.setString(2,username);
             pr.setString(3,pass);
             pr.setString(4,type);
-            return pr.executeUpdate() != -1;
+
+            int response=pr.executeUpdate();
+            if (response != -1){
+                Helper.showMessage("error");
+            }
+            return response != -1;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return true;
+    }
+    public static User getFetch(String username){
+        User obj=null;
+        String query="SELECT * FROM user WHERE username=?";
+
+        try {
+            PreparedStatement pr=DBConnector.getInstance().prepareStatement(query);
+            pr.setString(1,username);
+            ResultSet rs=pr.executeQuery();
+            if (rs.next()){
+                obj=new User();
+                obj.setId(rs.getInt("id"));
+                obj.setName(rs.getString("name"));
+                obj.setUsername(rs.getString("username"));
+                obj.setPass(rs.getString("pass"));
+                obj.setType(rs.getString("type"));
+
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    return obj;
     }
 }

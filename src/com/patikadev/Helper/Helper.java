@@ -43,6 +43,10 @@ public class Helper {
                 msg="Plase Fill In The Blanks";
                 title="Error!";
                 break;
+            case "duplicate":
+                msg="Username already exist";
+                title="Error!";
+                break;
             case "error":
                 msg="Something Went Wrong";
                 title="Error!";

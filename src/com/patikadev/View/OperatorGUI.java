@@ -69,8 +69,9 @@ public class OperatorGUI extends JFrame {
                 if(User.add(name,username,password,type)){
                     Helper.showMessage("success");
                     loadUserModel();
-                }else{
-                    Helper.showMessage("error");
+                    fld_user_username.setText(null);
+                    fld_user_password.setText(null);
+                    fld_user_name.setText(null);
                 }
             }
         });
