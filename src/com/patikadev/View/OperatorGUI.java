@@ -6,6 +6,8 @@ import com.patikadev.Model.Operator;
 import com.patikadev.Model.User;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,6 +27,8 @@ public class OperatorGUI extends JFrame {
     private JPasswordField fld_user_password;
     private JComboBox cmb_user_type;
     private JButton btn_user_add;
+    private JTextField fld_user_id;
+    private JButton btn_user_delete;
     private DefaultTableModel mdl_user_list;
     private Object[] row_user_list;
 
@@ -49,7 +53,14 @@ public class OperatorGUI extends JFrame {
         lbl_welcome.setText("Welcome "+operator.getName());
 
         //ModelUserList
-        mdl_user_list=new DefaultTableModel();
+        mdl_user_list=new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column==0)
+                    return false;
+                return super.isCellEditable(row, column);
+            }
+        };
         Object[] col_user_list={"ID","Name Surname","User Name","Password","User Type"};
         mdl_user_list.setColumnIdentifiers(col_user_list);
 
@@ -58,6 +69,18 @@ public class OperatorGUI extends JFrame {
         loadUserModel();
         tbl_user_list.setModel(mdl_user_list);
         tbl_user_list.getTableHeader().setReorderingAllowed(false);
+
+        //Tabloda tıklanılan verinin id bilgisini çekmek için
+        tbl_user_list.getSelectionModel().addListSelectionListener(e -> {
+            try{
+                String select_user_id=tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(),0).toString();
+                fld_user_id.setText(select_user_id);
+            }catch (Exception exception){
+
+            }
+        });
+
+
         btn_user_add.addActionListener(e -> {
             if(Helper.isFieldEmpty(fld_user_name) || Helper.isFieldEmpty(fld_user_username) || Helper.isFieldEmpty(fld_user_password)){
                 Helper.showMessage("fill");
@@ -72,6 +95,19 @@ public class OperatorGUI extends JFrame {
                     fld_user_username.setText(null);
                     fld_user_password.setText(null);
                     fld_user_name.setText(null);
+                }
+            }
+        });
+        btn_user_delete.addActionListener(e -> {
+            if(Helper.isFieldEmpty(fld_user_id)){
+                Helper.showMessage("fill");
+            }else {
+                int user_id=Integer.parseInt(fld_user_id.getText());
+                if(User.delete(user_id)){
+                    Helper.showMessage("success");
+                    loadUserModel();
+                }else{
+                    Helper.showMessage("error");
                 }
             }
         });
