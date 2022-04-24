@@ -171,4 +171,39 @@ public class User {
         }
         return true;
     }
+
+    public static ArrayList<User> searchUserList(String query){
+        ArrayList<User> userList=new ArrayList<>();
+        User obj;
+        try {
+            Statement st = DBConnector.getInstance().createStatement();
+            ResultSet rs = st.executeQuery(query);
+            while (rs.next()){
+                obj=new User();
+                obj.setId(rs.getInt("id"));
+                obj.setName(rs.getString("name"));
+                obj.setUsername(rs.getString("username"));
+                obj.setPass(rs.getString("pass"));
+                obj.setType(rs.getString("type"));
+
+                userList.add(obj);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userList;
+    }
+    public static String searchQuery(String name,String username,String type){
+        String query="SELECT * FROM user WHERE username LIKE '%{{username}}%' AND name LIKE '%{{name}}%'";
+        query=query.replace("{{username}}",username);
+        query=query.replace("{{name}}",name);
+        if(type.isEmpty()){
+
+            query+=" AND type='{{type}}'";
+            query=query.replace("{{type}}", type);
+        }
+
+        return query;
+    }
 }

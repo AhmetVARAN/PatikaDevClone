@@ -10,6 +10,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class OperatorGUI extends JFrame {
     private JPanel wrapper;
@@ -131,11 +132,16 @@ public class OperatorGUI extends JFrame {
                 }
             }
         });
-        btn_user_sh.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
+        btn_user_sh.addActionListener(e -> {
+            String name=fld_sh_user_name.getText();
+            String username=fld_sh_user_username.getText();
+            String type=cmb_sh_user_type.getSelectedItem().toString();
+            String query=User.searchQuery(name,username,type);
+            ArrayList<User> searhingUser = User.searchUserList(query);
+            loadUserModel(searhingUser);
+        });
+        btn_logout.addActionListener(e -> {
+            dispose();
         });
     }
     public void loadUserModel(){
@@ -143,6 +149,21 @@ public class OperatorGUI extends JFrame {
         clearModel.setRowCount(0);
 
         for (User obj:User.getList()){
+            int i=0;
+            row_user_list[i++]=obj.getId();
+            row_user_list[i++]=obj.getName();
+            row_user_list[i++]=obj.getUsername();
+            row_user_list[i++]=obj.getPass();
+            row_user_list[i++]=obj.getType();
+
+            mdl_user_list.addRow(row_user_list);
+        }
+    }
+    public void loadUserModel(ArrayList<User> list){
+        DefaultTableModel clearModel= (DefaultTableModel) tbl_user_list.getModel();
+        clearModel.setRowCount(0);
+
+        for (User obj:list){
             int i=0;
             row_user_list[i++]=obj.getId();
             row_user_list[i++]=obj.getName();
