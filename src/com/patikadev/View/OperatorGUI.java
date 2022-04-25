@@ -9,8 +9,8 @@ import com.patikadev.Model.User;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 public class OperatorGUI extends JFrame {
@@ -46,6 +46,7 @@ public class OperatorGUI extends JFrame {
     private DefaultTableModel mdl_patika_list;
     private Object[] row_patika_list;
 
+    private JPopupMenu patikaMenu;
     private final Operator operator;
 
     public OperatorGUI(Operator operator){
@@ -114,6 +115,35 @@ public class OperatorGUI extends JFrame {
         //ModelUserList Sonu
 
         //PatikaList
+        //sağ tık menü oluşturma
+        patikaMenu=new JPopupMenu();
+        JMenuItem updateMenu=new JMenuItem("Update");
+        JMenuItem deleteMenu=new JMenuItem("Delete");
+        patikaMenu.add(updateMenu);
+        patikaMenu.add(deleteMenu);
+        //updatemenu için sağ tıklayınca update panelin açılması
+        updateMenu.addActionListener(e -> {
+            int select_id=Integer.parseInt(tbl_patika_list.getValueAt(tbl_patika_list.getSelectedRow(),0).toString());
+            UpdatePatikaGUI updateGUI = new UpdatePatikaGUI(Patika.getFetch(select_id));
+            updateGUI.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadPatikaModel();
+                }
+            });
+        });
+
+        deleteMenu.addActionListener(e -> {
+            if(Helper.confirm("sure")){
+                int select_id=Integer.parseInt(tbl_patika_list.getValueAt(tbl_patika_list.getSelectedRow(),0).toString());
+                if (Patika.delete(select_id)){
+                    Helper.showMessage("success");
+                    loadPatikaModel();
+                }else {
+                    Helper.showMessage("error");
+                }
+            }
+        });
         mdl_patika_list=new DefaultTableModel();
         Object[] col_patika_list={"ID","Patika Adı"};
         mdl_patika_list.setColumnIdentifiers(col_patika_list);
@@ -121,8 +151,19 @@ public class OperatorGUI extends JFrame {
         loadPatikaModel();
 
         tbl_patika_list.setModel(mdl_patika_list);
+        tbl_patika_list.setComponentPopupMenu(patikaMenu);
         tbl_patika_list.getTableHeader().setReorderingAllowed(false);//row col yerlerinin değişmesini engeller
         tbl_patika_list.getColumnModel().getColumn(0).setMaxWidth(100);//ilk columnun genişliğini 100 yapma
+        tbl_patika_list.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                //sağ tıklanan yeri seçili hala getirir
+                Point point=e.getPoint();
+                int selected_row=tbl_patika_list.rowAtPoint(point);
+                tbl_patika_list.setRowSelectionInterval(selected_row,selected_row);
+
+            }
+        });
         //PatikaList Sonu
         btn_user_add.addActionListener(e -> {
             if(Helper.isFieldEmpty(fld_user_name) || Helper.isFieldEmpty(fld_user_username) || Helper.isFieldEmpty(fld_user_password)){
@@ -145,15 +186,18 @@ public class OperatorGUI extends JFrame {
             if(Helper.isFieldEmpty(fld_user_id)){
                 Helper.showMessage("fill");
             }else {
-                int user_id=Integer.parseInt(fld_user_id.getText());
-                if(User.delete(user_id)){
-                    Helper.showMessage("success");
-                    loadUserModel();
-                }else{
-                    Helper.showMessage("error");
+                if (Helper.confirm("sure")){
+                    int user_id=Integer.parseInt(fld_user_id.getText());
+                    if(User.delete(user_id)){
+                        Helper.showMessage("success");
+                        loadUserModel();
+                    }else{
+                        Helper.showMessage("error");
+                    }
                 }
             }
         });
+        //operator menu search kısmı
         btn_user_sh.addActionListener(e -> {
             String name=fld_sh_user_name.getText();
             String username=fld_sh_user_username.getText();

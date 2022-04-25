@@ -61,7 +61,19 @@ public class Helper {
         }
         JOptionPane.showMessageDialog(null,msg,title,JOptionPane.INFORMATION_MESSAGE);
     }
+    public static boolean confirm(String str){
+        String message;
 
+        switch (str){
+            case "sure":
+                message="Are You Sure About Do This Proccess ? ";
+                break;
+            default:
+                message=str;
+        }
+        return JOptionPane.showConfirmDialog(null,message,"Are You Sure ?",JOptionPane.YES_NO_OPTION)==0;
+
+    }
     public static void optionPaneEN(){
         UIManager.put("OptionPane.okButtonText","Okay");
     }
