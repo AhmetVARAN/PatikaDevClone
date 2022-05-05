@@ -124,6 +124,7 @@ public class OperatorGUI extends JFrame {
                 }
                 loadUserModel();
                 loadEducatorCombo();
+                loadCourseModel();
             }
         });
         //ModelUserList Sonu
@@ -144,6 +145,7 @@ public class OperatorGUI extends JFrame {
                 public void windowClosed(WindowEvent e) {
                     loadPatikaModel();
                     loadPatikaCombo();
+                    loadCourseModel();
                 }
             });
         });
@@ -155,6 +157,7 @@ public class OperatorGUI extends JFrame {
                     Helper.showMessage("success");
                     loadPatikaModel();
                     loadPatikaCombo();
+                    loadCourseModel();
                 }else {
                     Helper.showMessage("error");
                 }
@@ -228,6 +231,7 @@ public class OperatorGUI extends JFrame {
                         Helper.showMessage("success");
                         loadUserModel();
                         loadEducatorCombo();
+                        loadCourseModel();
                         fld_user_id.setText(null);
                     }else{
                         Helper.showMessage("error");
